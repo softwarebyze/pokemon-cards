@@ -1,9 +1,9 @@
 - [x] fetch pokemon from api
 - [x] each card has name, image, xp
+- [x] show pokemon
 - [] pokemon tab (stacked cards)
 - [] The api returns a field “base_experience” use this in a circular progress chart and animate it (use 563xp as a max value)
 - [] favorites (list)
-- [x] show pokemon
 - [] manage the favorites with zustand
 - [] swipe right to add card to favorites
 - [] green tint/check when swiping right
