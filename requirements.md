@@ -1,0 +1,16 @@
+- [] pokemon tab (stacked cards)
+- [] my deck (list)
+- [] each card has name, image, xp
+- [] fetch pokemon from api
+- [] show pokemon
+- [] manage the deck with zustand
+- [] swipe right to add card to deck
+- [] green tint/check when swiping right
+- [] cards rotate slightly during swipe
+- [] swipe left to skip card
+- [] smooth swipe animations
+- [] animate exp with skia once card is revealed
+- [] The api returns a field “base_experience” use this in a circular progress chart and animate it (use 563xp as a max value)
+- [] readme with setup info
+- [] recording of the app
+- [] recording explaining decisions
