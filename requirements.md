@@ -1,5 +1,5 @@
 - [] pokemon tab (stacked cards)
-- [] my deck (list)
+- [] favorites (list)
 - [] each card has name, image, xp
 - [] fetch pokemon from api
 - [] show pokemon
