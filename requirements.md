@@ -1,16 +1,16 @@
 - [x] fetch pokemon from api
 - [x] each card has name, image, xp
 - [x] show pokemon
-- [] pokemon tab (stacked cards)
-- [] The api returns a field “base_experience” use this in a circular progress chart and animate it (use 563xp as a max value)
-- [] favorites (list)
-- [] manage the favorites with zustand
+- [x] readme with setup info
 - [] swipe right to add card to favorites
-- [] green tint/check when swiping right
-- [] cards rotate slightly during swipe
+- [] pokemon tab (stacked cards)
 - [] swipe left to skip card
 - [] smooth swipe animations
+- [] manage the favorites with zustand
 - [] animate exp with skia once card is revealed
-- [] readme with setup info
+- [] The api returns a field “base_experience” use this in a circular progress chart and animate it (use 563xp as a max value)
+- [] favorites (list)
+- [] green tint/check when swiping right
+- [] cards rotate slightly during swipe
 - [] recording of the app
 - [] recording explaining decisions
