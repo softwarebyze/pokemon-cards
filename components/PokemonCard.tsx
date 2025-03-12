@@ -1,15 +1,15 @@
 import { StyleSheet, View } from "react-native";
 import { Text } from "./Themed";
 import { Image } from "expo-image";
-
-export type PokemonForCard = { name: string; exp: number; imgUrl: string };
+import { PokemonForCard } from "@/utils/mapPokemonToCardData";
 
 export const PokemonCard = ({ pokemon }: { pokemon: PokemonForCard }) => {
   return (
     <View style={styles.pokemonCard}>
+      <Text>{pokemon.id}</Text>
       <Image style={styles.image} source={{ uri: pokemon.imgUrl }} />
       <Text style={styles.name}>{pokemon.name}</Text>
-      <Text style={styles.exp}>{pokemon.exp}</Text>
+      <Text style={styles.exp}>{pokemon.exp}xp</Text>
     </View>
   );
 };
