@@ -2,15 +2,17 @@ import { StyleSheet } from "react-native";
 import { Text, useThemeColor, View } from "./Themed";
 import { Image } from "expo-image";
 import { PokemonForCard } from "@/utils/mapPokemonToCardData";
+import { ProgressCircle } from "./ProgressCircle";
 
 export const PokemonCard = ({ pokemon }: { pokemon: PokemonForCard }) => {
   const borderColor = useThemeColor({}, "text");
+
   return (
     <View style={[styles.pokemonCard, { borderColor }]}>
       <Text>{pokemon.id}</Text>
       <Image style={styles.image} source={{ uri: pokemon.imgUrl }} />
       <Text style={styles.name}>{pokemon.name}</Text>
-      <Text style={styles.exp}>{pokemon.exp}xp</Text>
+      <ProgressCircle value={pokemon.exp} max={563} size={46} />
     </View>
   );
 };
@@ -25,9 +27,6 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 48,
-  },
-  exp: {
-    fontSize: 20,
   },
   image: {
     width: 300,

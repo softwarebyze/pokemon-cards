@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 import { usePokemonStore } from "@/pokemon/store";
 import { Text, View } from "@/components/Themed";
+import { ProgressCircle } from "@/components/ProgressCircle";
 
 export default function FavoritesScreen() {
   const favorites = usePokemonStore((state) => state.favorites);
@@ -10,6 +11,7 @@ export default function FavoritesScreen() {
       {favorites.map((favorite) => (
         <Text key={favorite.id}>
           {favorite.id} {favorite.name}
+          <ProgressCircle value={favorite.exp} max={563} size={46} />
         </Text>
       ))}
     </View>
