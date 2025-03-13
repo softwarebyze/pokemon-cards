@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { type SharedValue } from "react-native-reanimated";
 import {
   Canvas,
@@ -56,6 +56,8 @@ export const ProgressCircle = ({
     },
   ];
 
+  const textDimensions = font?.measureText(value.toString());
+
   return (
     <Canvas style={style}>
       <Group origin={origin} transform={transform}>
@@ -80,7 +82,7 @@ export const ProgressCircle = ({
       </Group>
       <Text
         font={font}
-        x={size / 3}
+        x={(size - (textDimensions?.width ?? 0)) / 2}
         y={size / 1.6}
         text={`${value.toString()}`}
       />
