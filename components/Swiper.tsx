@@ -92,7 +92,7 @@ export const Swiper = <T,>({
   const rightOverlayStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
       translateX.value,
-      [0, width / 4, width / 2],
+      [0, width / 16, width / 8],
       [0, 0.5, 1],
       { extrapolateLeft: "clamp" }
     );
@@ -120,7 +120,7 @@ export const Swiper = <T,>({
           <Animated.View
             style={[
               leftOverlayStyle,
-              { position: "absolute", top: 50, right: 0 },
+              { position: "absolute", top: 134, right: 40 },
             ]}
           >
             <Text style={{ fontSize: 24, color: "red", fontWeight: "bold" }}>
@@ -130,7 +130,7 @@ export const Swiper = <T,>({
           <Animated.View
             style={[
               rightOverlayStyle,
-              { position: "absolute", top: 50, left: 0 },
+              { position: "absolute", top: 134, left: 40 },
             ]}
           >
             <Text style={{ fontSize: 24, color: "green", fontWeight: "bold" }}>

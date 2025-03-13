@@ -12,7 +12,7 @@ import {
 export default function SwipeScreen() {
   const [i, setI] = useState(0);
 
-  const BATCH_SIZE = 100;
+  const BATCH_SIZE = 20;
 
   const { data: theCards } = useQuery({
     queryFn: async () => await fetchPokemonInRange(1, BATCH_SIZE),
