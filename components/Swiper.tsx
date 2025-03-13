@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { View, Text, Dimensions } from "react-native";
+import { Dimensions } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
@@ -9,6 +9,7 @@ import Animated, {
   runOnJS,
   interpolate,
 } from "react-native-reanimated";
+import { Text, View } from "./Themed";
 
 const { width } = Dimensions.get("window");
 const THRESHOLD = width / 8;
@@ -54,13 +55,17 @@ export const Swiper = <T,>({
       if (swipedFarEnough) {
         const direction = translationX > 0 ? 1 : -1;
 
-        translateX.value = withTiming(direction * width * 2, {
-          duration: 300,
-        }, () => {
-          runOnJS(handleSwipe)(direction);
-          translateX.value = 0;
-          translateY.value = 0;
-        });
+        translateX.value = withTiming(
+          direction * width * 2,
+          {
+            duration: 300,
+          },
+          () => {
+            runOnJS(handleSwipe)(direction);
+            translateX.value = 0;
+            translateY.value = 0;
+          }
+        );
       } else {
         translateX.value = withSpring(0);
         translateY.value = withSpring(0);
