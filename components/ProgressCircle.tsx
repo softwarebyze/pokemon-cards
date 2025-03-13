@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useDerivedValue, type SharedValue } from "react-native-reanimated";
+import { type SharedValue } from "react-native-reanimated";
 import {
   Canvas,
   Group,
@@ -14,7 +14,7 @@ type ProgressCircle = {
   strokeWidth?: number;
   backgroundColor?: string;
   color?: SharedValue<string>;
-  value: SharedValue<number>;
+  value: number;
   max: number;
 };
 
@@ -28,7 +28,7 @@ export const ProgressCircle = ({
 }: ProgressCircle) => {
   const font = useFont(require("@/assets/fonts/SpaceMono-Regular.ttf"));
 
-  const progress = value.value / max; //useDerivedValue(() => value.value / max);
+  const progress = value / max;
 
   const radius = size / 2 - strokeWidth / 2;
 
@@ -68,12 +68,6 @@ export const ProgressCircle = ({
           color={backgroundColor}
           strokeWidth={strokeWidth}
         />
-        {/* <Circle
-              cx={radius}
-              cy={radius}
-              r={radius}
-              color={backgroundColor}
-            /> */}
         <Path
           start={0}
           end={progress}
@@ -86,9 +80,9 @@ export const ProgressCircle = ({
       </Group>
       <Text
         font={font}
-        x={size / 4}
-        y={size / 1.5}
-        text={`${value.value.toString()}`}
+        x={size / 3}
+        y={size / 1.6}
+        text={`${value.toString()}`}
       />
     </Canvas>
   );
