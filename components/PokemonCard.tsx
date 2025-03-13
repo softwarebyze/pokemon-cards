@@ -12,7 +12,6 @@ export const PokemonCard = ({ pokemon }: { pokemon: PokemonForCard }) => {
       <Text>{pokemon.id}</Text>
       <Image style={styles.image} source={{ uri: pokemon.imgUrl }} />
       <Text style={styles.name}>{pokemon.name}</Text>
-      <Text style={styles.exp}>{pokemon.exp}xp</Text>
       <ProgressCircle value={pokemon.exp} max={563} size={46} />
     </View>
   );
@@ -28,9 +27,6 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 48,
-  },
-  exp: {
-    fontSize: 20,
   },
   image: {
     width: 300,

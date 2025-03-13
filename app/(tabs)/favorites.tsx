@@ -10,7 +10,7 @@ export default function FavoritesScreen() {
       <Text style={styles.title}>Favorites</Text>
       {favorites.map((favorite) => (
         <Text key={favorite.id}>
-          {favorite.id} {favorite.name} {favorite.exp}
+          {favorite.id} {favorite.name}
           <ProgressCircle value={favorite.exp} max={563} size={46} />
         </Text>
       ))}
