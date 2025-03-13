@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useRef } from "react";
 import { View, Text, Dimensions } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -15,7 +15,6 @@ const THRESHOLD = width / 8;
 
 interface SwiperProps<T> {
   cards: T[];
-  cardIndex: number;
   renderCard: (card: T, index: number) => React.ReactElement;
   onSwipedLeft: (index: number) => void;
   onSwipedRight: (index: number) => void;
@@ -23,26 +22,23 @@ interface SwiperProps<T> {
 
 export const Swiper = <T,>({
   cards,
-  cardIndex,
   renderCard,
   onSwipedLeft,
   onSwipedRight,
 }: SwiperProps<T>) => {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const cardIndex = useRef(0);
 
-  // Reset animation values when cardIndex changes from parent
-  useEffect(() => {
-    translateX.value = 0;
-    translateY.value = 0;
-  }, [cardIndex]);
+  const currentCard = cards[cardIndex.current];
+  const nextCard = cards[cardIndex.current + 1];
 
   const handleSwipe = (direction: number) => {
     console.log("handleSwipe", { direction });
     if (direction > 0) {
-      onSwipedRight(cardIndex);
+      onSwipedRight(cardIndex.current);
     } else {
-      onSwipedLeft(cardIndex);
+      onSwipedLeft(cardIndex.current);
     }
   };
 
@@ -58,13 +54,13 @@ export const Swiper = <T,>({
       if (swipedFarEnough) {
         const direction = translationX > 0 ? 1 : -1;
 
-        translateX.value = withTiming(
-          direction * width * 2,
-          { duration: 300 },
-          () => {
-            runOnJS(handleSwipe)(direction);
-          }
-        );
+        translateX.value = withTiming(direction * width * 2, {
+          duration: 300,
+        }, () => {
+          runOnJS(handleSwipe)(direction);
+          translateX.value = 0;
+          translateY.value = 0;
+        });
       } else {
         translateX.value = withSpring(0);
         translateY.value = withSpring(0);
@@ -106,17 +102,16 @@ export const Swiper = <T,>({
           style={[
             animatedStyle,
             {
-              position: "relative",
+              position: "absolute",
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
               zIndex: 2,
-              margin: "auto",
             },
           ]}
         >
-          {renderCard(cards[cardIndex], cardIndex)}
+          {renderCard(currentCard, cardIndex.current)}
           <Animated.View
             style={[
               leftOverlayStyle,
@@ -140,7 +135,7 @@ export const Swiper = <T,>({
         </Animated.View>
       </GestureDetector>
 
-      {cardIndex < cards.length - 1 && (
+      {nextCard && (
         <View
           style={{
             position: "absolute",
@@ -151,7 +146,7 @@ export const Swiper = <T,>({
             zIndex: 1,
           }}
         >
-          {renderCard(cards[cardIndex + 1], cardIndex + 1)}
+          {renderCard(nextCard, cardIndex.current + 1)}
         </View>
       )}
     </>

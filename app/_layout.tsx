@@ -1,4 +1,4 @@
-import 'expo-dev-client';
+import "expo-dev-client";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   DarkTheme,
@@ -14,6 +14,8 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/components/useColorScheme";
 import { ReactQueryProvider } from "@/ReactQueryProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+// import { ReactScan } from "react-scan/native";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -56,6 +58,13 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
+    // <ReactScan
+    //   options={{
+    //     enabled: false,
+    //     log: true,
+    //     animationWhenFlashing: false,
+    //   }}
+    // >
     <GestureHandlerRootView>
       <ReactQueryProvider>
         <ThemeProvider
@@ -68,5 +77,6 @@ function RootLayoutNav() {
         </ThemeProvider>
       </ReactQueryProvider>
     </GestureHandlerRootView>
+    // </ReactScan>
   );
 }

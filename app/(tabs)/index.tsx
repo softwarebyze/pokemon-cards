@@ -8,29 +8,38 @@ import {
   mapPokemonToCardData,
   PokemonForCard,
 } from "@/utils/mapPokemonToCardData";
+import { usePokemonStore } from "@/pokemon/store";
 
 export default function SwipeScreen() {
-  const [i, setI] = useState(0);
+  const { favorites, addFavorite, skipped, addSkipped } = usePokemonStore();
 
   const BATCH_SIZE = 20;
 
-  const { data: theCards } = useQuery({
+  const { data } = useQuery({
     queryFn: async () => await fetchPokemonInRange(1, BATCH_SIZE),
     queryKey: ["pokemon", 1, BATCH_SIZE],
     select: (data) => data.map(mapPokemonToCardData),
   });
 
-  if (!theCards) return null;
+  if (!data) return null;
+
+  const theCards = data.filter(
+    (p) =>
+      !favorites.some((f) => f.id === p.id) &&
+      !skipped.some((s) => s.id === p.id)
+  );
 
   const renderCard = (card: PokemonForCard) => <PokemonCard pokemon={card} />;
 
   const onSwipedLeft = (index: number) => {
-    setI((prevI) => prevI + 1);
     console.log(`Swiped left on ${theCards[index]?.name}`);
+    addSkipped(theCards[index]);
   };
   const onSwipedRight = (index: number) => {
-    setI((prevI) => prevI + 1);
-    console.log(`Swiped right on ${theCards[index]?.name}`);
+    const card = theCards[index];
+    console.log(`Swiped right on ${card.name}`);
+    if (!card) return;
+    addFavorite(card);
   };
 
   // const onSwipedAll = () => // fetch next batch? if i % batch_size === 0 ... fetch more?
@@ -39,7 +48,6 @@ export default function SwipeScreen() {
     <View style={{ flex: 1 }}>
       <Swiper
         cards={theCards}
-        cardIndex={i}
         renderCard={renderCard}
         onSwipedLeft={onSwipedLeft}
         onSwipedRight={onSwipedRight}
