@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { Swiper } from "@/components/Swiper";
