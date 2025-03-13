@@ -8,6 +8,7 @@ import {
   Text,
   useFont,
 } from "@shopify/react-native-skia";
+import { useThemeColor } from "./Themed";
 
 type ProgressCircle = {
   size: number;
@@ -27,6 +28,7 @@ export const ProgressCircle = ({
   backgroundColor = "orange",
 }: ProgressCircle) => {
   const font = useFont(require("@/assets/fonts/SpaceMono-Regular.ttf"));
+  const textColor = useThemeColor({}, "text");
 
   const progress = value / max;
 
@@ -81,6 +83,7 @@ export const ProgressCircle = ({
         />
       </Group>
       <Text
+        color={textColor}
         font={font}
         x={(size - (textDimensions?.width ?? 0)) / 2}
         y={size / 1.6}
