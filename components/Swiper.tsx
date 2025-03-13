@@ -8,7 +8,6 @@ import Animated, {
   withSpring,
   runOnJS,
   interpolate,
-  useDerivedValue,
 } from "react-native-reanimated";
 
 const { width } = Dimensions.get("window");
@@ -64,7 +63,7 @@ export const Swiper = <T,>({
       if (swipedFarEnough) {
         const direction = translationX > 0 ? 1 : -1;
         isTransitioning.value = true;
-
+        
         translateX.value = withTiming(
           direction * width * 2,
           { duration: 300 },
