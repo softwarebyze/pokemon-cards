@@ -6,9 +6,9 @@
 - [x] smooth swipe animations
 - [x] swipe left to skip card
 - [x] cards rotate slightly during swipe
-- [] manage the favorites with zustand
+- [x] manage the favorites with zustand
+- [x] swipe right to add card to favorites
 - [] animate exp with skia once card is revealed
-- [] swipe right to add card to favorites
 - [] The api returns a field “base_experience” use this in a circular progress chart and animate it (use 563xp as a max value)
 - [] favorites (list)
 - [] green tint/check when swiping right
