@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, Dimensions } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -8,6 +8,7 @@ import Animated, {
   withSpring,
   runOnJS,
   interpolate,
+  useDerivedValue,
 } from "react-native-reanimated";
 
 const { width } = Dimensions.get("window");
@@ -30,6 +31,14 @@ export const Swiper = <T,>({
 }: SwiperProps<T>) => {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const isTransitioning = useSharedValue(false);
+
+  // Reset animation values when cardIndex changes from parent
+  useEffect(() => {
+    translateX.value = 0;
+    translateY.value = 0;
+    isTransitioning.value = false;
+  }, [cardIndex]);
 
   const handleSwipe = (direction: number) => {
     console.log("handleSwipe", { direction });
@@ -42,19 +51,27 @@ export const Swiper = <T,>({
 
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
+      if (isTransitioning.value) return;
       translateX.value = event.translationX;
       translateY.value = event.translationY;
     })
     .onEnd((event) => {
+      if (isTransitioning.value) return;
+
       const { translationX } = event;
       const swipedFarEnough = Math.abs(translationX) > THRESHOLD;
+
       if (swipedFarEnough) {
         const direction = translationX > 0 ? 1 : -1;
-        translateX.value = withTiming(direction * width * 2, {}, () => {
-          translateX.value = 0;
-          translateY.value = 0;
-          runOnJS(handleSwipe)(direction);
-        });
+        isTransitioning.value = true;
+
+        translateX.value = withTiming(
+          direction * width * 2,
+          { duration: 300 },
+          () => {
+            runOnJS(handleSwipe)(direction);
+          }
+        );
       } else {
         translateX.value = withSpring(0);
         translateY.value = withSpring(0);
@@ -89,23 +106,14 @@ export const Swiper = <T,>({
     return { opacity };
   });
 
-  return (
-    <View style={{ flex: 1 }}>
-      {cardIndex < cards.length - 1 && (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 0,
-          }}
-        >
-          {renderCard(cards[cardIndex + 1], cardIndex + 1)}
-        </View>
-      )}
-      {cardIndex < cards.length && (
+  // Preload more cards for smoother transitions
+  const renderNextCards = () => {
+    // Only render if we have cards to show
+    if (cardIndex >= cards.length) return null;
+
+    return (
+      <>
+        {/* Current card (top layer) */}
         <GestureDetector gesture={panGesture}>
           <Animated.View
             style={[
@@ -116,7 +124,7 @@ export const Swiper = <T,>({
                 left: 0,
                 right: 0,
                 bottom: 0,
-                zIndex: 1,
+                zIndex: 3,
               },
             ]}
           >
@@ -145,7 +153,41 @@ export const Swiper = <T,>({
             </Animated.View>
           </Animated.View>
         </GestureDetector>
-      )}
-    </View>
-  );
+
+        {/* Next card (middle layer) */}
+        {cardIndex < cards.length - 1 && (
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 2,
+            }}
+          >
+            {renderCard(cards[cardIndex + 1], cardIndex + 1)}
+          </View>
+        )}
+
+        {/* Card after next (bottom layer) */}
+        {cardIndex < cards.length - 2 && (
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1,
+            }}
+          >
+            {renderCard(cards[cardIndex + 2], cardIndex + 2)}
+          </View>
+        )}
+      </>
+    );
+  };
+
+  return <View style={{ flex: 1 }}>{renderNextCards()}</View>;
 };
