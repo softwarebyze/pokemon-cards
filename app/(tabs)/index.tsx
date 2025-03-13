@@ -1,40 +1,50 @@
-import { ScrollView, StyleSheet } from "react-native";
-import { fetchPokemonInRange } from "@/fetchPokemon";
-import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { View } from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { Swiper } from "@/components/Swiper";
 import { PokemonCard } from "@/components/PokemonCard";
+import { fetchPokemonInRange } from "@/fetchPokemon";
+import {
+  mapPokemonToCardData,
+  PokemonForCard,
+} from "@/utils/mapPokemonToCardData";
 
 export default function SwipeScreen() {
-  const [id, setId] = useState(1);
-  const BATCH_SIZE = 4;
-  const { data: pokemons } = useQuery({
-    queryFn: async () => await fetchPokemonInRange(id, id + BATCH_SIZE),
-    queryKey: ["pokemon", id],
+  const [i, setI] = useState(0);
+
+  const BATCH_SIZE = 20;
+
+  const { data: theCards } = useQuery({
+    queryFn: async () => await fetchPokemonInRange(1, BATCH_SIZE),
+    queryKey: ["pokemon", 1, BATCH_SIZE],
+    select: (data) => data.map(mapPokemonToCardData),
   });
 
-  if (!pokemons) return null;
+  if (!theCards) return null;
 
-  const thePokemon = pokemons[0]!;
+  const renderCard = (card: PokemonForCard) => <PokemonCard pokemon={card} />;
 
-  const pokemon = {
-    name: thePokemon.name,
-    exp: thePokemon.base_experience,
-    imgUrl: thePokemon.sprites.front_default,
+  const onSwipedLeft = (index: number) => {
+    setI((prevI) => prevI + 1);
+    console.log(`Swiped left on ${theCards[index]?.name}`);
+  };
+  const onSwipedRight = (index: number) => {
+    setI((prevI) => prevI + 1);
+    console.log(`Swiped right on ${theCards[index]?.name}`);
   };
 
+  // const onSwipedAll = () => // fetch next batch? if i % batch_size === 0 ... fetch more?
+
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
-      <PokemonCard pokemon={pokemon} />
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <Swiper
+        cards={theCards}
+        cardIndex={i}
+        renderCard={renderCard}
+        onSwipedLeft={onSwipedLeft}
+        onSwipedRight={onSwipedRight}
+        // onSwipedAll={onSwipedAll}
+      />
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 8,
-    fontWeight: "bold",
-  },
-});
