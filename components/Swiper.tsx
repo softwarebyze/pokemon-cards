@@ -53,8 +53,8 @@ export const Swiper = <T,>({
         translateX.value = withTiming(direction * width * 2, {}, () => {
           translateX.value = 0;
           translateY.value = 0;
+          runOnJS(handleSwipe)(direction);
         });
-        runOnJS(handleSwipe)(direction);
       } else {
         translateX.value = withSpring(0);
         translateY.value = withSpring(0);
