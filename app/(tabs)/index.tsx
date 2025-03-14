@@ -1,5 +1,5 @@
-import { View } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Swiper } from "@/components/Swiper";
 import { PokemonCard } from "@/components/PokemonCard";
 import { fetchPokemonInRange } from "@/fetchPokemon";
@@ -8,54 +8,108 @@ import {
   PokemonForCard,
 } from "@/utils/mapPokemonToCardData";
 import { usePokemonStore } from "@/pokemon/store";
-import { Text } from "@/components/Themed";
+import { Text, useThemeColor } from "@/components/Themed";
 
 export default function SwipeScreen() {
   const { favorites, addFavorite, skipped, addSkipped } = usePokemonStore();
+  const accentColor = useThemeColor({}, "tint");
 
   const BATCH_SIZE = 20;
 
-  const { data, isLoading } = useQuery({
-    queryFn: async () => await fetchPokemonInRange(1, BATCH_SIZE),
-    queryKey: ["pokemon", 1, BATCH_SIZE],
-    select: (data) => data.map(mapPokemonToCardData),
-  });
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["pokemon"],
+      queryFn: async ({ pageParam }) => {
+        const startId = pageParam;
+        const endId = startId + BATCH_SIZE - 1;
+        return fetchPokemonInRange(startId, endId);
+      },
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        if (lastPage.length === 0) return undefined;
+        const highestId = Math.max(...lastPage.map((pokemon) => pokemon.id));
+        return highestId + 1;
+      },
+    });
 
-  if (isLoading)
+  const pokemonCards = data?.pages
+    .flatMap((page) => page)
+    .map(mapPokemonToCardData)
+    .filter((pokemon) => {
+      // Skip if already in favorites or skipped
+      const isFavorite = favorites.some((f) => f.id === pokemon.id);
+      const isSkipped = skipped.some((s) => s.id === pokemon.id);
+      return !isFavorite && !isSkipped;
+    });
+
+  if (isLoading && pokemonCards?.length === 0) {
     return (
-      <View style={{ margin: "auto" }}>
-        <Text>Loading...</Text>
+      <View style={styles.centeredContainer}>
+        <ActivityIndicator size="large" color={accentColor} />
+        <Text style={styles.loadingText}>Loading Pokémon...</Text>
       </View>
     );
+  }
 
-  if (!data) return null;
+  if (
+    (!pokemonCards || pokemonCards?.length === 0) &&
+    !isLoading &&
+    !isFetchingNextPage
+  ) {
+    return (
+      <View style={styles.centeredContainer}>
+        <Text>No more Pokémon to show</Text>
+      </View>
+    );
+  }
 
   const renderCard = (card: PokemonForCard) => <PokemonCard pokemon={card} />;
   const renderNextCard = (card: PokemonForCard) => (
     <PokemonCard pokemon={card} next />
   );
+
   const onSwipedLeft = (card: PokemonForCard) => {
-    console.log(`Swiped left on ${card?.name}`);
+    if (!card) return;
     addSkipped(card);
   };
+
   const onSwipedRight = (card: PokemonForCard) => {
-    console.log(`Swiped right on ${card?.name}`);
     if (!card) return;
     addFavorite(card);
   };
 
-  // const onSwipedAll = () => // fetch next batch? if i % batch_size === 0 ... fetch more?
+  const onSwipedAll = () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  if (!pokemonCards) return null;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <Swiper
-        cards={data}
+        cards={pokemonCards}
         renderCard={renderCard}
         renderNextCard={renderNextCard}
         onSwipedLeft={onSwipedLeft}
         onSwipedRight={onSwipedRight}
-        // onSwipedAll={onSwipedAll}
+        onSwipedAll={onSwipedAll}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+  },
+});

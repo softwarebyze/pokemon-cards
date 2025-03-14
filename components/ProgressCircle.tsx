@@ -5,6 +5,7 @@ import Animated, {
   useSharedValue,
   withTiming,
   FadeIn,
+  cancelAnimation,
 } from "react-native-reanimated";
 import {
   Canvas,
@@ -40,12 +41,15 @@ export const ProgressCircle = ({
 
   const animationProgress = useSharedValue(0);
 
-  // animate from 0 to 1
   useEffect(() => {
+    cancelAnimation(animationProgress);
+    animationProgress.value = 0;
     animationProgress.value = withTiming(1, {
       duration: 1000,
     });
-  }, []);
+
+    return () => cancelAnimation(animationProgress);
+  }, [value]);
 
   const animatedProgressValue = useDerivedValue(() =>
     interpolate(animationProgress.value, [0, 1], [0, realProgress])

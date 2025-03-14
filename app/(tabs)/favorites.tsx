@@ -12,6 +12,9 @@ export default function FavoritesScreen() {
       scrollToOverflowEnabled
       keyExtractor={(f) => f.id.toString()}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
+      ListEmptyComponent={() => (
+        <Text style={{ marginTop: 100, margin: "auto" }}>No favorites yet</Text>
+      )}
       renderItem={({ item: favorite }) => (
         <View style={styles.row}>
           <View style={styles.left}>

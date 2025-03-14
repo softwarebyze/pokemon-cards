@@ -15,7 +15,7 @@ import { useColorScheme } from "@/components/useColorScheme";
 import { ReactQueryProvider } from "@/ReactQueryProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-// import { ReactScan } from "react-scan/native";
+import { ReactScan } from "react-scan/native";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -58,25 +58,25 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    // <ReactScan
-    //   options={{
-    //     enabled: false,
-    //     log: true,
-    //     animationWhenFlashing: false,
-    //   }}
-    // >
-    <GestureHandlerRootView>
-      <ReactQueryProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-          </Stack>
-        </ThemeProvider>
-      </ReactQueryProvider>
-    </GestureHandlerRootView>
-    // </ReactScan>
+    <ReactScan
+      options={{
+        enabled: false,
+        log: true,
+        animationWhenFlashing: "fade-out",
+      }}
+    >
+      <GestureHandlerRootView>
+        <ReactQueryProvider>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+            </Stack>
+          </ThemeProvider>
+        </ReactQueryProvider>
+      </GestureHandlerRootView>
+    </ReactScan>
   );
 }
