@@ -8,35 +8,38 @@ import {
   PokemonForCard,
 } from "@/utils/mapPokemonToCardData";
 import { usePokemonStore } from "@/pokemon/store";
+import { Text } from "@/components/Themed";
 
 export default function SwipeScreen() {
   const { favorites, addFavorite, skipped, addSkipped } = usePokemonStore();
 
   const BATCH_SIZE = 20;
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryFn: async () => await fetchPokemonInRange(1, BATCH_SIZE),
     queryKey: ["pokemon", 1, BATCH_SIZE],
     select: (data) => data.map(mapPokemonToCardData),
   });
 
+  if (isLoading)
+    return (
+      <View style={{ margin: "auto" }}>
+        <Text>Loading...</Text>
+      </View>
+    );
+
   if (!data) return null;
 
-  const theCards = data.filter(
-    (p) =>
-      !favorites.some((f) => f.id === p.id) &&
-      !skipped.some((s) => s.id === p.id)
-  );
-
   const renderCard = (card: PokemonForCard) => <PokemonCard pokemon={card} />;
-
-  const onSwipedLeft = (index: number) => {
-    console.log(`Swiped left on ${theCards[index]?.name}`);
-    addSkipped(theCards[index]);
+  const renderNextCard = (card: PokemonForCard) => (
+    <PokemonCard pokemon={card} next />
+  );
+  const onSwipedLeft = (card: PokemonForCard) => {
+    console.log(`Swiped left on ${card?.name}`);
+    addSkipped(card);
   };
-  const onSwipedRight = (index: number) => {
-    const card = theCards[index];
-    console.log(`Swiped right on ${card.name}`);
+  const onSwipedRight = (card: PokemonForCard) => {
+    console.log(`Swiped right on ${card?.name}`);
     if (!card) return;
     addFavorite(card);
   };
@@ -46,8 +49,9 @@ export default function SwipeScreen() {
   return (
     <View style={{ flex: 1 }}>
       <Swiper
-        cards={theCards}
+        cards={data}
         renderCard={renderCard}
+        renderNextCard={renderNextCard}
         onSwipedLeft={onSwipedLeft}
         onSwipedRight={onSwipedRight}
         // onSwipedAll={onSwipedAll}

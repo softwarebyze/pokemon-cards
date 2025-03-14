@@ -4,15 +4,22 @@ import { Image } from "expo-image";
 import { PokemonForCard } from "@/utils/mapPokemonToCardData";
 import { ProgressCircle } from "./ProgressCircle";
 
-export const PokemonCard = ({ pokemon }: { pokemon: PokemonForCard }) => {
+export const PokemonCard = ({
+  pokemon,
+  next,
+}: {
+  pokemon: PokemonForCard;
+  next?: boolean;
+}) => {
   const borderColor = useThemeColor({}, "text");
 
   return (
     <View style={[styles.pokemonCard, { borderColor }]}>
-      <Text>{pokemon.id}</Text>
       <Image style={styles.image} source={{ uri: pokemon.imgUrl }} />
-      <Text style={styles.name}>{pokemon.name}</Text>
-      <ProgressCircle value={pokemon.exp} max={563} size={46} />
+      <View style={styles.row}>
+        <Text style={styles.name}>{pokemon.name}</Text>
+        {!next && <ProgressCircle value={pokemon.exp} max={563} size={46} />}
+      </View>
     </View>
   );
 };
@@ -33,5 +40,10 @@ const styles = StyleSheet.create({
     height: 300,
     userSelect: "none",
     pointerEvents: "none",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });

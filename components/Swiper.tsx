@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Dimensions } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -9,37 +9,46 @@ import Animated, {
   runOnJS,
   interpolate,
 } from "react-native-reanimated";
-import { Text, View } from "./Themed";
+import { Text } from "./Themed";
 
 const { width } = Dimensions.get("window");
 const THRESHOLD = width / 8;
 
-interface SwiperProps<T> {
-  cards: T[];
-  renderCard: (card: T, index: number) => React.ReactElement;
-  onSwipedLeft: (index: number) => void;
-  onSwipedRight: (index: number) => void;
+interface Item {
+  id: string | number;
 }
 
-export const Swiper = <T,>({
+interface SwiperProps<T extends Item> {
+  cards: T[];
+  renderCard: (card: T) => React.ReactElement;
+  renderNextCard: (card: T) => React.ReactElement;
+  onSwipedLeft: (card: T) => void;
+  onSwipedRight: (card: T) => void;
+}
+
+export const Swiper = <T extends Item>({
   cards,
   renderCard,
+  renderNextCard,
   onSwipedLeft,
   onSwipedRight,
 }: SwiperProps<T>) => {
+  const [cardIndex, setCardIndex] = useState(0);
+
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
-  const cardIndex = useRef(0);
 
-  const currentCard = cards[cardIndex.current];
-  const nextCard = cards[cardIndex.current + 1];
+  useEffect(() => {
+    translateX.value = 0;
+    translateY.value = 0;
+  }, [cardIndex]);
 
   const handleSwipe = (direction: number) => {
-    console.log("handleSwipe", { direction });
+    setCardIndex((prevCardIndex) => prevCardIndex + 1);
     if (direction > 0) {
-      onSwipedRight(cardIndex.current);
+      onSwipedRight(cards[cardIndex]);
     } else {
-      onSwipedLeft(cardIndex.current);
+      onSwipedLeft(cards[cardIndex]);
     }
   };
 
@@ -58,12 +67,10 @@ export const Swiper = <T,>({
         translateX.value = withTiming(
           direction * width * 2,
           {
-            duration: 300,
+            duration: 100,
           },
           () => {
             runOnJS(handleSwipe)(direction);
-            translateX.value = 0;
-            translateY.value = 0;
           }
         );
       } else {
@@ -100,60 +107,73 @@ export const Swiper = <T,>({
     return { opacity };
   });
 
-  return (
-    <>
-      <GestureDetector gesture={panGesture}>
-        <Animated.View
-          style={[
-            animatedStyle,
-            {
+  if (cardIndex >= cards.length) {
+    return <Text>No mo</Text>;
+  }
+
+  return cards
+    .map((card, i) => {
+      if (i === cardIndex) {
+        return (
+          <GestureDetector key={card.id} gesture={panGesture}>
+            <Animated.View
+              style={[
+                animatedStyle,
+                {
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 2,
+                },
+              ]}
+            >
+              {renderCard(card)}
+              <Animated.View
+                style={[
+                  leftOverlayStyle,
+                  { position: "absolute", top: 140, right: 40 },
+                ]}
+              >
+                <Text
+                  style={{ fontSize: 40, color: "red", fontWeight: "bold" }}
+                >
+                  NOPE
+                </Text>
+              </Animated.View>
+              <Animated.View
+                style={[
+                  rightOverlayStyle,
+                  { position: "absolute", top: 140, left: 40 },
+                ]}
+              >
+                <Text
+                  style={{ fontSize: 40, color: "green", fontWeight: "bold" }}
+                >
+                  LIKE
+                </Text>
+              </Animated.View>
+            </Animated.View>
+          </GestureDetector>
+        );
+      } else if (i > cardIndex) {
+        return (
+          <Animated.View
+            key={card.id}
+            style={{
               position: "absolute",
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
-              zIndex: 2,
-            },
-          ]}
-        >
-          {renderCard(currentCard, cardIndex.current)}
-          <Animated.View
-            style={[
-              leftOverlayStyle,
-              { position: "absolute", top: 0, right: 0 },
-            ]}
+              zIndex: 1,
+            }}
           >
-            <Text style={{ fontSize: 24, color: "red", fontWeight: "bold" }}>
-              NOPE
-            </Text>
+            {renderNextCard(card)}
           </Animated.View>
-          <Animated.View
-            style={[
-              rightOverlayStyle,
-              { position: "absolute", top: 0, left: 0 },
-            ]}
-          >
-            <Text style={{ fontSize: 24, color: "green", fontWeight: "bold" }}>
-              LIKE
-            </Text>
-          </Animated.View>
-        </Animated.View>
-      </GestureDetector>
-
-      {nextCard && (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 1,
-          }}
-        >
-          {renderCard(nextCard, cardIndex.current + 1)}
-        </View>
-      )}
-    </>
-  );
+        );
+      }
+    })
+    .reverse();
 };

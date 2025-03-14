@@ -8,9 +8,9 @@
 - [x] cards rotate slightly during swipe
 - [x] manage the favorites with zustand
 - [x] swipe right to add card to favorites
-- [] animate exp with skia once card is revealed
-- [] The api returns a field “base_experience” use this in a circular progress chart and animate it (use 563xp as a max value)
-- [] favorites (list)
-- [] green tint/check when swiping right
+- [x] animate exp with skia once card is revealed
+- [x] The api returns a field “base_experience” use this in a circular progress chart and animate it (use 563xp as a max value)
+- [x] favorites (list)
+- [x] green tint/check when swiping right
 - [] recording of the app
 - [] recording explaining decisions

@@ -1,5 +1,11 @@
-import React, { useMemo } from "react";
-import { type SharedValue } from "react-native-reanimated";
+import React, { useEffect, useMemo } from "react";
+import Animated, {
+  interpolate,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+  FadeIn,
+} from "react-native-reanimated";
 import {
   Canvas,
   Group,
@@ -14,23 +20,36 @@ type ProgressCircle = {
   size: number;
   strokeWidth?: number;
   backgroundColor?: string;
-  color?: SharedValue<string>;
+  color?: string;
   value: number;
   max: number;
 };
 
 export const ProgressCircle = ({
   size,
-  color,
+  color = "orange",
   value,
   max,
   strokeWidth = 4,
-  backgroundColor = "orange",
+  backgroundColor = "grey",
 }: ProgressCircle) => {
   const font = useFont(require("@/assets/fonts/SpaceMono-Regular.ttf"));
   const textColor = useThemeColor({}, "text");
 
-  const progress = value / max;
+  const realProgress = value / max;
+
+  const animationProgress = useSharedValue(0);
+
+  // animate from 0 to 1
+  useEffect(() => {
+    animationProgress.value = withTiming(1, {
+      duration: 1000,
+    });
+  }, []);
+
+  const animatedProgressValue = useDerivedValue(() =>
+    interpolate(animationProgress.value, [0, 1], [0, realProgress])
+  );
 
   const radius = size / 2 - strokeWidth / 2;
 
@@ -61,34 +80,38 @@ export const ProgressCircle = ({
   const textDimensions = font?.measureText(value.toString());
 
   return (
-    <Canvas style={style}>
-      <Group origin={origin} transform={transform}>
-        <Path
-          start={0}
-          end={1}
-          path={path}
-          style={"stroke"}
-          strokeCap={"round"}
-          color={backgroundColor}
-          strokeWidth={strokeWidth}
-        />
-        <Path
-          start={0}
-          end={progress}
-          path={path}
-          style={"stroke"}
-          strokeCap={"round"}
-          color={color ?? "skyblue"}
-          strokeWidth={strokeWidth}
-        />
-      </Group>
-      <Text
-        color={textColor}
-        font={font}
-        x={(size - (textDimensions?.width ?? 0)) / 2}
-        y={size / 1.6}
-        text={`${value.toString()}`}
-      />
-    </Canvas>
+    value >= 0 && (
+      <Animated.View entering={FadeIn}>
+        <Canvas style={style}>
+          <Group origin={origin} transform={transform}>
+            <Path
+              start={0}
+              end={1}
+              path={path}
+              style="stroke"
+              strokeCap="round"
+              color={backgroundColor}
+              strokeWidth={strokeWidth}
+            />
+            <Path
+              start={0}
+              end={animatedProgressValue}
+              path={path}
+              style="stroke"
+              strokeCap="round"
+              color={color}
+              strokeWidth={strokeWidth}
+            />
+          </Group>
+          <Text
+            color={textColor}
+            font={font}
+            x={(size - (textDimensions?.width ?? 0)) / 2}
+            y={size / 1.6}
+            text={`${value.toString()}`}
+          />
+        </Canvas>
+      </Animated.View>
+    )
   );
 };
