@@ -2,6 +2,11 @@
 
 A React Native mobile application that allows users to browse Pokemon cards with smooth swipe animations, view details, and save favorites.
 
+## Demo
+
+<video controls src="ScreenRecording.mp4" title="Screen Recording"></video>
+
+
 ## Features
 
 - Browse Pokemon cards with smooth swipe animations
