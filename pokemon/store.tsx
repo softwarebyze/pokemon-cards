@@ -10,17 +10,13 @@ export type PokemonStore = {
 
 export const usePokemonStore = create<PokemonStore>((set) => ({
   favorites: [],
-  addFavorite: (pokemon) => {
-    console.log("addFavorite", pokemon.name);
-    return set((state) => ({
+  addFavorite: (pokemon) =>
+    set((state) => ({
       favorites: [...state.favorites, pokemon],
-    }));
-  },
+    })),
   skipped: [],
-  addSkipped: (pokemon) => {
-    console.log("addSkipped", pokemon.name);
-    return set((state) => ({
+  addSkipped: (pokemon) =>
+    set((state) => ({
       skipped: [...state.skipped, pokemon],
-    }));
-  },
+    })),
 }));

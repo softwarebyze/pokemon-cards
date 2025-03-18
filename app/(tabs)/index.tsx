@@ -42,7 +42,7 @@ export default function SwipeScreen() {
       return !isFavorite && !isSkipped;
     });
 
-  if (isLoading && pokemonCards?.length === 0) {
+  if (isLoading || isFetchingNextPage && pokemonCards?.length === 0) {
     return (
       <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color={accentColor} />
@@ -64,9 +64,6 @@ export default function SwipeScreen() {
   }
 
   const renderCard = (card: PokemonForCard) => <PokemonCard pokemon={card} />;
-  const renderNextCard = (card: PokemonForCard) => (
-    <PokemonCard pokemon={card} next />
-  );
 
   const onSwipedLeft = (card: PokemonForCard) => {
     if (!card) return;
@@ -91,7 +88,6 @@ export default function SwipeScreen() {
       <Swiper
         cards={pokemonCards}
         renderCard={renderCard}
-        renderNextCard={renderNextCard}
         onSwipedLeft={onSwipedLeft}
         onSwipedRight={onSwipedRight}
         onSwipedAll={onSwipedAll}
