@@ -4,7 +4,7 @@ A React Native mobile application that allows users to browse Pokemon cards with
 
 ## Demo
 
-https://github.com/user-attachments/assets/765d869a-9bcb-40e6-b576-e566b5ed8091
+https://github.com/user-attachments/assets/cacbbe9d-c038-41fa-b230-f67eea29d5da
 
 ## Features
 
